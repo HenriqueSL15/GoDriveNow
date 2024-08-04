@@ -3,7 +3,7 @@ import carHeroSection from "../assets/carHeroSection.png";
 function HeroSection() {
   return (
     <>
-      <div className="flex flex-row my-60 justify-between">
+      <div className="flex flex-row mt-60 mb-96 justify-between">
         <div className="ml-20 mt-20">
           <h1 className="text-5xl font-bold font-title">
             Encontre o Carro Perfeito para Suas Viagens
