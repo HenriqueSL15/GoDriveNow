@@ -1,4 +1,4 @@
-function Features() {
+function Features({ id }) {
   const features = [
     {
       name: "Variedade de Modelos",
@@ -28,20 +28,20 @@ function Features() {
 
   return (
     <>
-      <div className="flex justify-center">
+      <div id={id} className="flex justify-center">
         <h1 className="font-title font-bold text-4xl mt-40 mb-32">
           Por Que Escolher a Go Drive Now?
         </h1>
       </div>
 
       <div className="flex ml-5 text-center mb-10">
-        <div className="grid grid-cols-4 gap-12 mx-20">
+        <div className="grid grid-cols-4 gap-6 mx-20">
           {features.map((feature, index) => (
             <div key={index} className="w-full bg-gray-200 rounded p-5">
               <h1 className="font-title font-bold  text-2xl mb-6">
                 {feature.name}
               </h1>
-              <p className="font-text text-lg font-semibold mb-7">
+              <p className="font-text text-lg font-semibold mb-7 h-24">
                 {feature.description}
               </p>
               <h3 className="font-title font-bold text-4xl">{feature.icon}</h3>

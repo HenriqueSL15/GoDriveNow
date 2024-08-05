@@ -2,7 +2,7 @@ import React from "react";
 
 const ProductBox = () => {
   const products = Array(6).fill({
-    name: "Product name",
+    name: "Carro x",
     variant: "Variant",
     price: "$55",
   });
@@ -24,8 +24,8 @@ const ProductBox = () => {
               </p>
             </div>
             <p className="text-lg font-text">{product.variant}</p>
-            <button className="mt-4 w-full bg-white text-black border border-black py-2">
-              Add to cart
+            <button className="mt-4 w-full text-black border-2 border-black bg-white transition-all hover:text-white  hover:bg-black py-2">
+              Alugar
             </button>
           </div>
         ))}

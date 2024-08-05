@@ -1,9 +1,9 @@
 import TestimonialBox from "./TestimonialBox";
 
-function Testimonials() {
+function Testimonials({ id }) {
   return (
     <>
-      <div className="ml-20 flex justify-start">
+      <div id={id} className="ml-20 flex justify-start">
         <h1 className="font-title font-bold text-4xl mt-60 mb-20 w-1/3">
           O que Nossos Clientes Dizem
         </h1>
