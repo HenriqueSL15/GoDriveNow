@@ -1,4 +1,4 @@
-import carHeroSection from "../assets/carHeroSection.png";
+import carHeroSection from "../assets/cars/carHeroSection.png";
 
 function HeroSection({ id, scrollToSection }) {
   return (
