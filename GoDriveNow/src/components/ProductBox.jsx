@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import car1Path from "../assets/cars/car1.png";
 import car2Path from "../assets/cars/car2.png";
@@ -11,7 +11,11 @@ import car6Path from "../assets/cars/car6.png";
 
 const ProductBox = () => {
   const location = useLocation();
-  // let products = [];
+  const navigate = useNavigate();
+
+  function handleRentClick(product) {
+    navigate("/information-form", { state: { product } });
+  }
 
   const smallProducts = [
     {
@@ -145,7 +149,10 @@ const ProductBox = () => {
                   </p>
                 </div>
                 <p className="text-lg font-text">{product.variant}</p>
-                <button className="mt-4 w-full text-black border-2 border-black bg-white transition-all hover:text-white  hover:bg-black py-2">
+                <button
+                  onClick={() => handleRentClick(product)}
+                  className="mt-4 w-full text-black border-2 border-black bg-white transition-all hover:text-white  hover:bg-black py-2"
+                >
                   Alugar
                 </button>
               </div>
@@ -164,7 +171,10 @@ const ProductBox = () => {
                   </p>
                 </div>
                 <p className="text-lg font-text">{product.variant}</p>
-                <button className="mt-4 w-full text-black border-2 border-black bg-white transition-all hover:text-white  hover:bg-black py-2">
+                <button
+                  onClick={() => handleRentClick(product)}
+                  className="mt-4 w-full text-black border-2 border-black bg-white transition-all hover:text-white  hover:bg-black py-2"
+                >
                   Alugar
                 </button>
               </div>
