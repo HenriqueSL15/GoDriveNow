@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import Footer from "./Footer.jsx";
 import Header from "./Header.jsx";
 import Question from "./Question.jsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function InformationForm() {
   const location = useLocation();
@@ -14,7 +14,7 @@ function InformationForm() {
   const [answers, setAnswers] = useState([]);
 
   const questions = [
-    { text: "Qual é o seu nome?", placeholder: "Digite seu nome" },
+    { text: "Deseja alugar em qual data?", placeholder: "Escolha a data" },
     { text: "Qual é a sua idade?", placeholder: "Digite sua idade" },
     {
       text: "Qual carro você deseja alugar?",
@@ -29,7 +29,7 @@ function InformationForm() {
 
   return (
     <>
-      <Footer></Footer>
+      <Header></Header>
       {currentIndex < questions.length ? (
         <Question
           question={questions[currentIndex]}
@@ -42,7 +42,7 @@ function InformationForm() {
           <h2>Obrigado por responder!</h2>
         </div>
       )}
-      <Header></Header>
+      <Footer></Footer>
     </>
   );
 }
