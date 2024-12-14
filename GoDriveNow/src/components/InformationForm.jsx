@@ -12,19 +12,31 @@ function InformationForm() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
+  const [error, setError] = useState("");
 
   const questions = [
     { text: "Deseja alugar em qual data?", placeholder: "Escolha a data" },
-    { text: "Qual é a sua idade?", placeholder: "Digite sua idade" },
+    {
+      text: "Em qual data deseja terminar o aluguel?",
+      placeholder: "Escolha a data",
+    },
+    {
+      text: "Que horas deseja pegar o carro?",
+      placeholder: "Escolha o horário",
+    },
     {
       text: "Qual carro você deseja alugar?",
       placeholder: "Digite o nome do carro",
     },
   ];
 
-  const handleAnswer = (answer) => {
+  const handleAnswer = (answer, error) => {
     setAnswers([...answers, answer]); // Armazena a resposta
-    setCurrentIndex(currentIndex + 1); // Avança para a próxima pergunta
+    if (error == "") {
+      setCurrentIndex(currentIndex + 1); // Avança para a próxima pergunta
+    } else {
+      console.log(error);
+    }
   };
 
   return (
@@ -36,6 +48,7 @@ function InformationForm() {
           onAnswer={handleAnswer}
           currentIndex={currentIndex}
           totalQuestions={questions.length}
+          setError={setError}
         />
       ) : (
         <div>
