@@ -12,7 +12,7 @@ function InformationForm() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
 
   const questions = [
     { text: "Deseja alugar em qual data?", placeholder: "Escolha a data" },
@@ -25,17 +25,22 @@ function InformationForm() {
       placeholder: "Escolha o horário",
     },
     {
-      text: "Qual carro você deseja alugar?",
-      placeholder: "Digite o nome do carro",
+      text: "Que horas deseja devolver o carro?",
+      placeholder: "Escolha o horário",
+    },
+    {
+      text: "Qual será o método de pagamento?",
+      placeholder: "",
     },
   ];
 
-  const handleAnswer = (answer, error) => {
-    setAnswers([...answers, answer]); // Armazena a resposta
-    if (error == "") {
-      setCurrentIndex(currentIndex + 1); // Avança para a próxima pergunta
+  const handleAnswer = (answer, err) => {
+    if (err) {
+      console.log("Teve um erro");
     } else {
-      console.log(error);
+      setAnswers([...answers, answer]); // Armazena a resposta
+      setCurrentIndex(currentIndex + 1); // Avança para a próxima pergunta
+      setError(null); // Limpa o erro após resposta válida
     }
   };
 
@@ -48,7 +53,6 @@ function InformationForm() {
           onAnswer={handleAnswer}
           currentIndex={currentIndex}
           totalQuestions={questions.length}
-          setError={setError}
         />
       ) : (
         <div>
