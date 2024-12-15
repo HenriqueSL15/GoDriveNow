@@ -14,7 +14,7 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
   const [finalTime, setFinalTime] = useState("08:00");
 
   const [clickedPix, setClickedPix] = useState(false);
-  const [clickedCredit, setCLickedCredit] = useState(false);
+  const [clickedPaymentOnTime, setClickedPaymentOnTime] = useState(false);
 
   const [credit, setCredit] = useState(null);
 
@@ -48,6 +48,12 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
       selectedFinalDate == null
     ) {
       errorToSend = true;
+    } else if (
+      !clickedPaymentOnTime &&
+      !clickedPix &&
+      question.text == "Qual será o método de pagamento?"
+    ) {
+      errorToSend = true;
     }
 
     //Escolhe qual variável enviar dependendo da pergunta
@@ -61,6 +67,8 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
       answerToSend = initialTime;
     } else if (question.text === "Que horas deseja devolver o carro?") {
       answerToSend = finalTime;
+    } else if (question.text === "Qual será o método de pagamento?") {
+      answerToSend = clickedPix ? "pix" : "payment on time";
     }
 
     // Chama a função onAnswer passando a resposta correta
@@ -174,7 +182,7 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
                   : `hover:border-white hover:text-white hover:bg-black`
               }`}
               onClick={() => {
-                setCLickedCredit(false);
+                setClickedPaymentOnTime(false);
                 setClickedPix(true);
                 console.log("Cliquei no pix");
               }}
@@ -183,17 +191,17 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
             </label>
             <label
               className={`font-bold border border-black w-1/2 py-3 cursor-pointer justify-center transition-all ${
-                clickedCredit
+                clickedPaymentOnTime
                   ? "bg-black text-white border-white"
                   : "hover:border-white hover:text-white hover:bg-black"
               }`}
               onClick={() => {
-                setCLickedCredit(true);
+                setClickedPaymentOnTime(true);
                 setClickedPix(false);
-                console.log("Cliquei no crédito");
+                console.log("Cliquei no pagamento na hora");
               }}
             >
-              Cartão
+              Pagamento na hora
             </label>
 
             {clickedPix ? (
@@ -213,11 +221,41 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
               console.log()
             )}
           </div>
+        ) : question.text == "Informações para contato/identificação" ? (
+          <div className="flex w-full justify-between mt-5 mb-10">
+            <div className="w-1/2">
+              <h2 className="font-title font-medium">
+                Nome Completo (fictício)
+              </h2>
+              <input
+                className="w-3/4 border border-gray-500 rounded p-2 mt-1"
+                type="text"
+                placeholder="Digite seu nome"
+              />
+
+              <h2 className="font-title font-medium  mt-10">
+                Número de telefone (fictício)
+              </h2>
+              <input
+                className="w-3/4 border border-gray-500 rounded p-2 mt-1"
+                type="text"
+                placeholder="Digite seu telefone (contando DDD)"
+              />
+            </div>
+            <div className="w-1/2">
+              <h2 className="font-title font-medium">CPF (fictício)</h2>
+              <input
+                className="w-3/4 border border-gray-500 rounded p-2 mt-1"
+                type="text"
+                placeholder="Digite seu CPF"
+              />
+            </div>
+          </div>
         ) : (
-          console.log("Acabou")
+          console.log("Não existem mais opções")
         )}
         <button
-          className="w-1/6 h-1/6 p-2 mt-10 rounded-lg bg-black text-white transition-all hover:bg-white hover:border hover:border-black hover:text-black"
+          className="w-1/6 h-1/6 p-2 mt-10 rounded-lg bg-black text-white transition-all hover:bg-white border border-white hover:border-black hover:text-black"
           type="submit"
         >
           Próximo

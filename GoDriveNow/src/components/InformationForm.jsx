@@ -33,6 +33,10 @@ function InformationForm() {
       text: "Qual será o método de pagamento?",
       placeholder: "",
     },
+    {
+      text: "Informações para contato/identificação",
+      placeholder: "",
+    },
   ];
 
   //Avalia a resposta enviada para esse ojeto
@@ -57,9 +61,7 @@ function InformationForm() {
           totalQuestions={questions.length}
         />
       ) : (
-        <div>
-          <h2>Obrigado por responder!</h2>
-        </div>
+        console.log(answers)
       )}
       <Footer></Footer>
     </>
