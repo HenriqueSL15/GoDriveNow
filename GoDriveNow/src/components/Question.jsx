@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 function Question({ question, onAnswer, currentIndex, totalQuestions }) {
+  //Variáveis das respostas
   const [answer, setAnswer] = useState("");
   const [selectedInitialDate, setSelectedInitialDate] = useState(null);
   const [selectedFinalDate, setSelectedFinalDate] = useState(null);
@@ -12,12 +13,18 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
   const [initialTime, setInitialTime] = useState("08:00");
   const [finalTime, setFinalTime] = useState("08:00");
 
+  const [clickedPix, setClickedPix] = useState(false);
+  const [clickedCredit, setCLickedCredit] = useState(false);
+
+  const [credit, setCredit] = useState(null);
+
   const [activeButton, setActiveButton] = useState(null);
 
   const handleClick = (value) => {
     setActiveButton(value);
   };
 
+  // Altera a preview do horário dependendo da escolha
   const handleTimeChange = (e) => {
     if (question.text == "Que horas deseja pegar o carro?") {
       setInitialTime(e.target.value);
@@ -26,9 +33,10 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
     }
   };
 
+  //Função que manda as informações para o objeto pai
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Verifique os valores necessários para a validação
+    // Verifica se existe algum campo em branco
     let errorToSend = false;
     if (
       question.text == "Deseja alugar em qual data?" &&
@@ -42,6 +50,7 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
       errorToSend = true;
     }
 
+    //Escolhe qual variável enviar dependendo da pergunta
     let answerToSend = "";
 
     if (question.text === "Deseja alugar em qual data?") {
@@ -58,9 +67,14 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
     onAnswer(answerToSend, errorToSend);
   };
 
-  useEffect(() => {
-    console.log("Error foi atualizado:", selectedFinalDate);
-  }, [selectedFinalDate]);
+  //Função que copia um texto para a área de transferência
+  const handleCopy = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text); // Copia o texto para a área de transferência
+    } catch (err) {
+      console.error("Falha ao copiar o texto: ", err);
+    }
+  };
 
   return (
     <form
@@ -152,12 +166,58 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
             placeholderText={question.placeholder}
           />
         ) : question.text == "Qual será o método de pagamento?" ? (
-          <div></div>
+          <div className="flex flex-col w-full justify-center items-center mb-5 text-center">
+            <label
+              className={`font-bold border border-black w-1/2 py-3 cursor-pointer justify-center transition-all mb-2 ${
+                clickedPix
+                  ? `bg-black text-white border-white`
+                  : `hover:border-white hover:text-white hover:bg-black`
+              }`}
+              onClick={() => {
+                setCLickedCredit(false);
+                setClickedPix(true);
+                console.log("Cliquei no pix");
+              }}
+            >
+              Pix
+            </label>
+            <label
+              className={`font-bold border border-black w-1/2 py-3 cursor-pointer justify-center transition-all ${
+                clickedCredit
+                  ? "bg-black text-white border-white"
+                  : "hover:border-white hover:text-white hover:bg-black"
+              }`}
+              onClick={() => {
+                setCLickedCredit(true);
+                setClickedPix(false);
+                console.log("Cliquei no crédito");
+              }}
+            >
+              Cartão
+            </label>
+
+            {clickedPix ? (
+              <div className="flex flex-col w-full justify-center items-center">
+                <h2
+                  className="border rounded border-black mt-6 w-3/4 text-black p-2 cursor-pointer hover:scale-105 transform transition-all"
+                  type="text"
+                  onClick={(event) => handleCopy(event.target.textContent)}
+                >
+                  Chave fictícia..........................
+                </h2>
+                <p className="text-gray-500 mt-1">
+                  Clique acima para copiar na sua área de transfêrencia
+                </p>
+              </div>
+            ) : (
+              console.log()
+            )}
+          </div>
         ) : (
           console.log("Acabou")
         )}
         <button
-          className="w-1/6 h-1/6 p-2 rounded-lg bg-black text-white transition-all hover:bg-white hover:border hover:border-black hover:text-black"
+          className="w-1/6 h-1/6 p-2 mt-10 rounded-lg bg-black text-white transition-all hover:bg-white hover:border hover:border-black hover:text-black"
           type="submit"
         >
           Próximo

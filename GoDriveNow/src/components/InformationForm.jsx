@@ -14,6 +14,7 @@ function InformationForm() {
   const [answers, setAnswers] = useState([]);
   const [error, setError] = useState(null);
 
+  //Lista de perguntas
   const questions = [
     { text: "Deseja alugar em qual data?", placeholder: "Escolha a data" },
     {
@@ -34,6 +35,7 @@ function InformationForm() {
     },
   ];
 
+  //Avalia a resposta enviada para esse ojeto
   const handleAnswer = (answer, err) => {
     if (err) {
       console.log("Teve um erro");

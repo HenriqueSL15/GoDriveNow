@@ -13,10 +13,12 @@ const ProductBox = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  //Navega para o fórmulário de informações
   function handleRentClick(product) {
     navigate("/information-form", { state: { product } });
   }
 
+  //Lista de carros
   const smallProducts = [
     {
       name: "Carro 1",
