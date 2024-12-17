@@ -13,6 +13,10 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
   const [initialTime, setInitialTime] = useState("08:00");
   const [finalTime, setFinalTime] = useState("08:00");
 
+  const [name, setName] = useState(null);
+  const [cpf, setCpf] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState(null);
+
   const [clickedPix, setClickedPix] = useState(false);
   const [clickedPaymentOnTime, setClickedPaymentOnTime] = useState(false);
 
@@ -24,12 +28,9 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
 
   const [isOpen, setIsOpen] = useState(false);
 
+  //Ativa o pop up
   const togglePopup = () => {
     setIsOpen(!isOpen);
-  };
-
-  const handleClick = (value) => {
-    setActiveButton(value);
   };
 
   // Altera a preview do horário dependendo da escolha
@@ -38,6 +39,21 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
       setInitialTime(e.target.value);
     } else {
       setFinalTime(e.target.value);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    // Permite apenas números (removendo qualquer caractere não numérico)
+    const numericValue = value.replace(/[^0-9]/g, "");
+    console.log(numericValue);
+
+    // Limita o valor a no máximo 11 caracteres e separa os dois inputs que podem usar essa função
+    if (name == "cpf" && numericValue.length <= 11) {
+      setCpf(numericValue);
+    } else if (name == "phoneNumber" && numericValue.length <= 11) {
+      setPhoneNumber(numericValue);
     }
   };
 
@@ -74,6 +90,15 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
         "O método de pagamento não foi selecionado",
         "Selecione o método de pagamento para poder continuar",
       ]);
+    } else if (
+      question.text == "Informações para contato/identificação" &&
+      (!name || !cpf || !phoneNumber)
+    ) {
+      errorToSend = true;
+      setPopUpMessage([
+        "Um ou mais campos estão vazios",
+        "Preencha todos os campos requisitados para poder continuar",
+      ]);
     }
 
     if (errorToSend) {
@@ -93,6 +118,12 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
       answerToSend = finalTime;
     } else if (question.text === "Qual será o método de pagamento?") {
       answerToSend = clickedPix ? "pix" : "payment on time";
+    } else if (question.text === "Informações para contato/identificação") {
+      answerToSend = {
+        name: name,
+        phoneNumber: Number(phoneNumber),
+        cpf: Number(cpf),
+      };
     }
 
     // Chama a função onAnswer passando a resposta correta
@@ -282,38 +313,47 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
               </div>
             )}
           </div>
-        ) : question.text == "Informações para contato/identificação" ? (
-          <div className="flex w-full justify-between mt-5 mb-10">
-            <div className="w-1/2">
-              <h2 className="font-title font-medium">
-                Nome Completo (fictício)
-              </h2>
-              <input
-                className="w-3/4 border border-gray-500 rounded p-2 mt-1"
-                type="text"
-                placeholder="Digite seu nome"
-              />
-
-              <h2 className="font-title font-medium  mt-10">
-                Número de telefone (fictício)
-              </h2>
-              <input
-                className="w-3/4 border border-gray-500 rounded p-2 mt-1"
-                type="number"
-                placeholder="Digite seu telefone (contando DDD)"
-              />
-            </div>
-            <div className="w-1/2">
-              <h2 className="font-title font-medium">CPF (fictício)</h2>
-              <input
-                className="w-3/4 border border-gray-500 rounded p-2 mt-1"
-                type="number"
-                placeholder="Digite seu CPF"
-              />
-            </div>
-          </div>
         ) : (
-          console.log("Não existem mais opções")
+          question.text == "Informações para contato/identificação" && (
+            <div className="flex w-full justify-between mt-5 mb-10">
+              <div className="w-1/2">
+                <h2 className="font-title font-medium">
+                  Nome Completo (fictício)
+                </h2>
+                <input
+                  className="w-3/4 border border-gray-500 rounded p-2 mt-1"
+                  type="text"
+                  placeholder="Digite seu nome"
+                  onChange={(e) => setName(e.target.value)}
+                />
+
+                <h2 className="font-title font-medium  mt-10">
+                  Número de telefone (fictício)
+                </h2>
+                <input
+                  className="w-3/4 border border-gray-500 rounded p-2 mt-1"
+                  type="text"
+                  value={phoneNumber}
+                  name="phoneNumber"
+                  placeholder="Digite seu telefone (contando DDD)"
+                  onChange={handleInputChange}
+                  maxLength={11}
+                />
+              </div>
+              <div className="w-1/2">
+                <h2 className="font-title font-medium">CPF (fictício)</h2>
+                <input
+                  className="w-3/4 border border-gray-500 rounded p-2 mt-1"
+                  type="text"
+                  name="cpf"
+                  value={cpf}
+                  onChange={handleInputChange}
+                  maxLength={11} // Apenas para reforçar, mas já limitado pela lógica
+                  placeholder="Digite seu CPF"
+                />
+              </div>
+            </div>
+          )
         )}
         <button
           className="w-1/6 h-1/6 p-2 mt-10 rounded-lg bg-black text-white transition-all hover:bg-white border border-white hover:border-black hover:text-black"
