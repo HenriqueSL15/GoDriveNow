@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
@@ -10,12 +10,23 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
   const [selectedInitialDate, setSelectedInitialDate] = useState(null);
   const [selectedFinalDate, setSelectedFinalDate] = useState(null);
 
-  const [initialTime, setInitialTime] = useState("08:00");
-  const [finalTime, setFinalTime] = useState("08:00");
+  const initialTimeRef = useRef();
+  const finalTimeRef = useRef();
+
+  // Armazena o dia atual
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Limpa as horas para comparar apenas o dia/mês/ano
+
+  const [initialTime, setInitialTime] = useState(null);
+  const [finalTime, setFinalTime] = useState("choose");
+
+  let errorToSend = false;
 
   const [name, setName] = useState(null);
   const [cpf, setCpf] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState(null);
+
+  const [isFocus, setIsFocus] = useState(false);
 
   const [clickedPix, setClickedPix] = useState(false);
   const [clickedPaymentOnTime, setClickedPaymentOnTime] = useState(false);
@@ -34,20 +45,49 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
   };
 
   // Altera a preview do horário dependendo da escolha
-  const handleTimeChange = (e) => {
-    if (question.text == "Que horas deseja pegar o carro?") {
-      setInitialTime(e.target.value);
-    } else {
-      setFinalTime(e.target.value);
+  const handleTimeChange = (event) => {
+    if (question.text === "Que horas deseja pegar o carro?") {
+      setInitialTime(event.target.value);
+    } else if (question.text === "Que horas deseja devolver o carro?") {
+      if (selectedInitialDate.getTime() != selectedFinalDate.getTime()) {
+        setFinalTime(event.target.value);
+      } else {
+        if (
+          Number(initialTime) >= Number(event.target.value) ||
+          event.target.value == "choose"
+        ) {
+          Array.from(event.target).map((e) => {
+            if (e.value == initialTime) {
+              setPopUpMessage([
+                "Horário escolhido é inválido",
+                `Escolha um horário posterior a ${e.label}`,
+              ]);
+            }
+          });
+          setIsOpen(true);
+        } else {
+          setFinalTime(event.target.value);
+        }
+      }
     }
   };
 
+  // Possibilita a opção "Escolha uma opção" de aparecer
+  const handleFocus = () => {
+    setIsFocus(true);
+  };
+
+  // Impossibilita a opção "Escolha uma opção" de aparecer
+  const handleBlur = () => {
+    setIsFocus(false);
+  };
+
+  //Função que atualiza as mudanças de texto no input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     // Permite apenas números (removendo qualquer caractere não numérico)
     const numericValue = value.replace(/[^0-9]/g, "");
-    console.log(numericValue);
 
     // Limita o valor a no máximo 11 caracteres e separa os dois inputs que podem usar essa função
     if (name == "cpf" && numericValue.length <= 11) {
@@ -59,27 +99,35 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
 
   //Função que manda as informações para o objeto pai
   const handleSubmit = (e) => {
-    e.preventDefault();
     // Verifica se existe algum campo em branco
-    let errorToSend = false;
-    if (
-      question.text == "Deseja alugar em qual data?" &&
-      selectedInitialDate == null
-    ) {
-      errorToSend = true;
-      setPopUpMessage([
-        "Um ou mais campos estão vazios",
-        "Preencha todos os campos requisitados para poder continuar",
-      ]);
-    } else if (
-      question.text == "Em qual data deseja terminar o aluguel?" &&
-      selectedFinalDate == null
-    ) {
-      errorToSend = true;
-      setPopUpMessage([
-        "Um ou mais campos estão vazios",
-        "Preencha todos os campos requisitados para poder continuar",
-      ]);
+    if (question.text === "Deseja alugar em qual data?") {
+      if (selectedInitialDate == null) {
+        errorToSend = true;
+        setPopUpMessage([
+          "Data não selecionada",
+          "Por favor, selecione uma data para continuar.",
+        ]);
+      } else if (selectedInitialDate.getTime() < today.getTime()) {
+        errorToSend = true;
+        setPopUpMessage([
+          "Data inválida",
+          "A data selecionada não pode ser anterior ao dia atual.",
+        ]);
+      }
+    } else if (question.text == "Em qual data deseja terminar o aluguel?") {
+      if (selectedFinalDate == null) {
+        errorToSend = true;
+        setPopUpMessage([
+          "Data não selecionada",
+          "Por favor, selecione uma data para continuar.",
+        ]);
+      } else if (selectedFinalDate.getTime() < selectedInitialDate.getTime()) {
+        errorToSend = true;
+        setPopUpMessage([
+          "Data inválida",
+          "A data selecionada não pode ser anterior a data inicial.",
+        ]);
+      }
     } else if (
       !clickedPaymentOnTime &&
       !clickedPix &&
@@ -100,7 +148,6 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
         "Preencha todos os campos requisitados para poder continuar",
       ]);
     }
-
     if (errorToSend) {
       setIsOpen(true);
     }
@@ -199,62 +246,70 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
         ) : question.text === "Que horas deseja pegar o carro?" ? (
           <div className="relative">
             <select
-              className="mb-5 bg-white border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:border-none cursor-pointer appearance-none"
+              className="mb-5 bg-white border text-center border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:border-none cursor-pointer appearance-none"
               onChange={handleTimeChange}
+              value={initialTime}
               required
             >
-              <option value="08:00">08:00</option>
-              <option value="08:30">08:30</option>
-              <option value="09:00">09:00</option>
-              <option value="09:30">09:30</option>
-              <option value="10:00">10:00</option>
-              <option value="10:30">10:30</option>
-              <option value="11:00">11:00</option>
-              <option value="11:30">11:30</option>
-              <option value="12:00">12:00</option>
-              <option value="12:30">12:30</option>
-              <option value="13:00">13:00</option>
-              <option value="13:30">13:30</option>
-              <option value="14:00">14:00</option>
-              <option value="14:30">14:30</option>
-              <option value="15:00">15:00</option>
-              <option value="15:30">15:30</option>
-              <option value="16:00">16:00</option>
-              <option value="16:30">16:30</option>
-              <option value="17:00">17:00</option>
-              <option value="17:30">17:30</option>
-              <option value="18:00">18:00</option>
+              <option selected value="choose">
+                Escolha um horário
+              </option>
+              <option value={8}>08:00</option>
+              <option value={8.5}>08:30</option>
+              <option value={9}>09:00</option>
+              <option value={9.5}>09:30</option>
+              <option value={10}>10:00</option>
+              <option value={10.5}>10:30</option>
+              <option value={11}>11:00</option>
+              <option value={11.5}>11:30</option>
+              <option value={12}>12:00</option>
+              <option value={12.5}>12:30</option>
+              <option value={13}>13:00</option>
+              <option value={13.5}>13:30</option>
+              <option value={14}>14:00</option>
+              <option value={14.5}>14:30</option>
+              <option value={15}>15:00</option>
+              <option value={15.5}>15:30</option>
+              <option value={16}>16:00</option>
+              <option value={16.5}>16:30</option>
+              <option value={17}>17:00</option>
+              <option value={17.5}>17:30</option>
+              <option value={18}>18:00</option>
             </select>
             <span className="absolute inset-y-0 right-2 flex items-center pointer-events-none"></span>
           </div>
         ) : question.text === "Que horas deseja devolver o carro?" ? (
           <div className="relative">
             <select
-              className="mb-5 bg-white border border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:border-none cursor-pointer appearance-none"
+              className="mb-5 bg-white border text-center border-gray-300 rounded-md p-2 text-gray-700 focus:outline-none focus:ring-2 focus:border-none cursor-pointer appearance-none"
               onChange={handleTimeChange}
+              value={finalTime}
               required
             >
-              <option value="08:00">08:00</option>
-              <option value="08:30">08:30</option>
-              <option value="09:00">09:00</option>
-              <option value="09:30">09:30</option>
-              <option value="10:00">10:00</option>
-              <option value="10:30">10:30</option>
-              <option value="11:00">11:00</option>
-              <option value="11:30">11:30</option>
-              <option value="12:00">12:00</option>
-              <option value="12:30">12:30</option>
-              <option value="13:00">13:00</option>
-              <option value="13:30">13:30</option>
-              <option value="14:00">14:00</option>
-              <option value="14:30">14:30</option>
-              <option value="15:00">15:00</option>
-              <option value="15:30">15:30</option>
-              <option value="16:00">16:00</option>
-              <option value="16:30">16:30</option>
-              <option value="17:00">17:00</option>
-              <option value="17:30">17:30</option>
-              <option value="18:00">18:00</option>
+              <option selected value="choose">
+                Escolha um horário
+              </option>
+              <option value={8}>08:00</option>
+              <option value={8.5}>08:30</option>
+              <option value={9}>09:00</option>
+              <option value={9.5}>09:30</option>
+              <option value={10}>10:00</option>
+              <option value={10.5}>10:30</option>
+              <option value={11}>11:00</option>
+              <option value={11.5}>11:30</option>
+              <option value={12}>12:00</option>
+              <option value={12.5}>12:30</option>
+              <option value={13}>13:00</option>
+              <option value={13.5}>13:30</option>
+              <option value={14}>14:00</option>
+              <option value={14.5}>14:30</option>
+              <option value={15}>15:00</option>
+              <option value={15.5}>15:30</option>
+              <option value={16}>16:00</option>
+              <option value={16.5}>16:30</option>
+              <option value={17}>17:00</option>
+              <option value={17.5}>17:30</option>
+              <option value={18}>18:00</option>
             </select>
             <span className="absolute inset-y-0 right-2 flex items-center pointer-events-none"></span>
           </div>
@@ -278,7 +333,6 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
               onClick={() => {
                 setClickedPaymentOnTime(false);
                 setClickedPix(true);
-                console.log("Cliquei no pix");
               }}
             >
               Pix
@@ -292,7 +346,6 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
               onClick={() => {
                 setClickedPaymentOnTime(true);
                 setClickedPix(false);
-                console.log("Cliquei no pagamento na hora");
               }}
             >
               Pagamento na hora
@@ -357,7 +410,10 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
         )}
         <button
           className="w-1/6 h-1/6 p-2 mt-10 rounded-lg bg-black text-white transition-all hover:bg-white border border-white hover:border-black hover:text-black"
-          type="submit"
+          type="button"
+          onClick={() => {
+            handleSubmit();
+          }}
         >
           Próximo
         </button>
