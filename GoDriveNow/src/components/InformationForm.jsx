@@ -1,14 +1,22 @@
 import "../App.css";
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "./Footer.jsx";
 import Header from "./Header.jsx";
 import Question from "./Question.jsx";
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 function InformationForm() {
   const location = useLocation();
   const product = location.state.product;
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [popUpMessage, setPopUpMessage] = useState();
+
+  const navigate = useNavigate();
+
+  const [hours, setHours] = useState(0);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState([]);
@@ -23,7 +31,7 @@ function InformationForm() {
     10.5: "10:30",
     11: "11:00",
     11.5: "11:30",
-    12: "2:00",
+    12: "12:00",
     12.5: "12:30",
     13: "13:00",
     13.5: "13:30",
@@ -64,10 +72,11 @@ function InformationForm() {
   ];
 
   //Avalia a resposta enviada para esse ojeto
-  const handleAnswer = (answer, err) => {
+  const handleAnswer = (answer, err, hours) => {
     if (err) {
-      console.log("Teve um erro");
+      console.error(err);
     } else {
+      setHours(hours);
       setAnswers([...answers, answer]); // Armazena a resposta
       setCurrentIndex(currentIndex + 1); // Avança para a próxima pergunta
       setError(null); // Limpa o erro após resposta válida
@@ -83,6 +92,31 @@ function InformationForm() {
     const ano = data.getFullYear();
 
     return `${dia}/${mes}/${ano}`;
+  };
+
+  const sendToDatabase = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/sendToDatabase",
+        {
+          dataInicial: answers[0],
+          dataFinal: answers[1],
+          horarioInicial: answers[2],
+          horarioFinal: answers[3],
+          metodoPagamento: answers[4],
+          nome: answers[5].name,
+          cpf: answers[5].cpf,
+          telefone: answers[5].phoneNumber,
+        }
+      );
+      setIsOpen(true);
+      setPopUpMessage([
+        "Seus dados foram enviados",
+        "Agora você será redirecionado para a tela principal",
+      ]);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   // De acordo com o valor de horário(Ex: 12.5) ele compara para qual horário esse valor seria equivalente(Ex: "12:30")
@@ -104,8 +138,39 @@ function InformationForm() {
         />
       ) : (
         <div className="flex justify-center">
+          {isOpen && (
+            <div className="flex items-center justify-center bg-gray-100">
+              {/* Pop-up (Modal) */}
+
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white rounded-lg shadow-lg w-1/3">
+                  {/* Header do modal */}
+                  <div className="flex items-center justify-between p-4 border-b">
+                    <h2 className="text-lg font-bold font-title">
+                      {popUpMessage[0]}
+                    </h2>
+                  </div>
+
+                  {/* Conteúdo do modal */}
+                  <div className="p-4">
+                    <p className="font-title font-medium">{popUpMessage[1]}</p>
+                  </div>
+
+                  {/* Footer do modal */}
+                  <div className="flex justify-center  p-4 border-t">
+                    <button
+                      type="button"
+                      className="px-4 py-2 mr-2 w-20 text-gray-500 bg-gray-200 rounded hover:bg-gray-500 hover:text-gray-100 transition-all"
+                      onClick={() => navigate("/")}
+                    >
+                      Ok
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="flex flex-col shadow-xl w-1/2 mt-5 mb-10 ">
-            {console.log(answers[5].name)}
             <h1 className="font-title text-center font-bold text-lg mb-5">
               Resumo das informações
             </h1>
@@ -136,6 +201,23 @@ function InformationForm() {
             <div className="font-title py-3 px-5">
               <h1 className="font-medium pl-1">Horário final do aluguel</h1>
               <p className="border rounded p-2">{handleTime(answers[3])}</p>
+            </div>
+            <div className="font-title py-3 px-5">
+              <h1 className="font-medium pl-1">Preço por hora total</h1>
+              <p className="border rounded p-2">
+                {console.log(hours)}
+                R$ {hours * product.price},00 (Horas: {hours} / Preço por hora:
+                R$
+                {product.price},00)
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <button
+                className="px-5 py-2 m-5 border border-black font-title font-medium hover:border-white hover:text-white hover:bg-black transition-all"
+                onClick={sendToDatabase}
+              >
+                Confirmar
+              </button>
             </div>
           </div>
         </div>

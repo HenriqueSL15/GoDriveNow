@@ -22,37 +22,37 @@ const ProductBox = () => {
   const smallProducts = [
     {
       name: "Carro 1",
-      price: 57000,
+      price: 10,
       variant: "Vermelho",
       path: car1Path,
     },
     {
       name: "Carro 2",
-      price: 95000,
+      price: 15,
       variant: "Branco",
       path: car2Path,
     },
     {
       name: "Carro 3",
-      price: 46750,
+      price: 20,
       variant: "Branco",
       path: car3Path,
     },
     {
       name: "Carro 4",
-      price: 36800,
+      price: 25,
       variant: "Dourado",
       path: car4Path,
     },
     {
       name: "Carro 5",
-      price: 127300,
+      price: 30,
       variant: "Branco",
       path: car5Path,
     },
     {
       name: "Carro 6",
-      price: 14000,
+      price: 35,
       variant: "Vermelho",
       path: car6Path,
     },
@@ -61,73 +61,73 @@ const ProductBox = () => {
   const bigProducts = [
     {
       name: "Carro 1",
-      price: 57000,
+      price: 10,
       variant: "Vermelho",
       path: car1Path,
     },
     {
       name: "Carro 2",
-      price: 95000,
+      price: 15,
       variant: "Branco",
       path: car2Path,
     },
     {
       name: "Carro 3",
-      price: 46750,
+      price: 20,
       variant: "Branco",
       path: car3Path,
     },
     {
       name: "Carro 4",
-      price: 36800,
+      price: 25,
       variant: "Dourado",
       path: car4Path,
     },
     {
       name: "Carro 5",
-      price: 127300,
+      price: 30,
       variant: "Branco",
       path: car5Path,
     },
     {
       name: "Carro 6",
-      price: 14000,
+      price: 35,
       variant: "Vermelho",
       path: car6Path,
     },
     {
       name: "Carro 7",
-      price: 57000,
+      price: 40,
       variant: "Vermelho",
       path: car1Path,
     },
     {
       name: "Carro 8",
-      price: 95000,
+      price: 45,
       variant: "Branco",
       path: car2Path,
     },
     {
       name: "Carro 9",
-      price: 46750,
+      price: 50,
       variant: "Branco",
       path: car3Path,
     },
     {
       name: "Carro 10",
-      price: 36800,
+      price: 55,
       variant: "Dourado",
       path: car4Path,
     },
     {
       name: "Carro 11",
-      price: 127300,
+      price: 60,
       variant: "Branco",
       path: car5Path,
     },
     {
       name: "Carro 12",
-      price: 14000,
+      price: 65,
       variant: "Vermelho",
       path: car6Path,
     },
@@ -147,7 +147,7 @@ const ProductBox = () => {
                     {product.name}
                   </h2>
                   <p className="text-xl mt-4 font-text font-bold">
-                    R$ {product.price}
+                    R$ {product.price},00 / hora
                   </p>
                 </div>
                 <p className="text-lg font-text">{product.variant}</p>
@@ -169,7 +169,7 @@ const ProductBox = () => {
                     {product.name}
                   </h2>
                   <p className="text-xl mt-4 font-text font-bold">
-                    R$ {product.price}
+                    R$ {product.price},00 / hora
                   </p>
                 </div>
                 <p className="text-lg font-text">{product.variant}</p>

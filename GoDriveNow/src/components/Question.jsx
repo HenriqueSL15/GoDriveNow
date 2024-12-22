@@ -173,6 +173,38 @@ function Question({ question, onAnswer, currentIndex, totalQuestions }) {
       };
     }
 
+    if (selectedFinalDate && selectedInitialDate && initialTime && finalTime) {
+      // Convertendo as datas para objetos Date
+      const dataInicial = new Date(selectedInitialDate);
+      const dataFinal = new Date(selectedFinalDate);
+
+      // Calcula o número de dias entre as datas
+      const dias = (dataFinal - dataInicial) / (1000 * 60 * 60 * 24) + 1;
+
+      // Calcula as horas totais
+      let horasTotais = 0;
+
+      if (dias === 1) {
+        // Caso o aluguel seja no mesmo dia
+        horasTotais = Number(finalTime) - Number(initialTime);
+      } else {
+        // Caso haja mais de um dia
+        const horasPrimeiroDia = 24 - Number(initialTime); // Horas restantes no primeiro dia (de horaInicial até 24:00)
+        const horasUltimoDia = Number(finalTime); // Horas no último dia (de 00:00 até horaFinal)
+
+        // Soma as horas do primeiro e último dia
+        horasTotais = horasPrimeiroDia + horasUltimoDia;
+
+        // Adiciona horas dos dias intermediários
+        const diasIntermediarios = dias - 2; // Excluindo o primeiro e o último dia
+        if (diasIntermediarios > 0) {
+          horasTotais += diasIntermediarios * 24; // 24 horas por dia para os intermediários
+        }
+        onAnswer(answerToSend, errorToSend, horasTotais);
+        return;
+      }
+    }
+
     // Chama a função onAnswer passando a resposta correta
     onAnswer(answerToSend, errorToSend);
   };
