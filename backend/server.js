@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -6,13 +7,10 @@ const bcrypt = require("bcrypt");
 
 // Conexão com o MongoDB
 mongoose
-  .connect(
-    "mongodb+srv://myAtlasDBUser:135790@myatlasclusteredu.ufhaxua.mongodb.net/rentUsersDatabase?retryWrites=true&w=majority&appName=myAtlasClusterEDU",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("Conectado ao MongoDB!"))
   .catch((err) => console.error("Erro ao conectar ao MongoDB:", err));
 
@@ -85,7 +83,7 @@ app.post("/sendMessage", async (req, res) => {
 });
 
 // Iniciando o servidor
-const PORT = 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () =>
   console.log(`Servidor rodando em http://localhost:${PORT}`)
 );
