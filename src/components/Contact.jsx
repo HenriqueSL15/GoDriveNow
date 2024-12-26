@@ -19,11 +19,14 @@ function Contact({ id }) {
         email: email,
         mensagem: message,
       };
-      const response = await axios.post("http://localhost:5000/sendMessage", {
-        nome: fullMessage.nome,
-        email: fullMessage.email,
-        mensagem: fullMessage.mensagem,
-      });
+      const response = await axios.post(
+        "https://go-drive-now-backend.vercel.app/sendMessage",
+        {
+          nome: fullMessage.nome,
+          email: fullMessage.email,
+          mensagem: fullMessage.mensagem,
+        }
+      );
       console.log("Mensagem enviada com sucesso:", response.data);
       setIsOpen(true);
       setPopUpMessage([

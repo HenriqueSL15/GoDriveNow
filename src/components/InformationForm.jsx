@@ -97,7 +97,7 @@ function InformationForm() {
   const sendToDatabase = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/sendToDatabase`,
+        `https://go-drive-now-backend.vercel.app/sendToDatabase`,
         {
           dataInicial: answers[0],
           dataFinal: answers[1],
