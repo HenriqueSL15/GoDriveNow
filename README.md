@@ -24,7 +24,7 @@ Acesse a demonstração ao vivo [aqui](https://zippy-haupia-09ff37.netlify.app).
 
 ## 📂 Estrutura do Projeto
 ``` 
-git clone https://github.com/seuusuario/seurepositorio.git
+git clone https://github.com/HenriqueSL15/GoDriveNow.git
 
 # Instale as dependências
 npm install
